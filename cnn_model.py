@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import tensorflow as tf
 import torch
 import torch.nn as nn
 from torch.nn import init
@@ -12,53 +13,53 @@ import torch.nn.functional as F
 import sys
 
 
-class ConvBlock(nn.Module):
-    def __init__(self, in_size, out_size, kernel, stride):
+class ConvBlock(tf.keras.layers.Layer):
+    def __init__(self, in_size, kernel, stride):
         super(ConvBlock, self).__init__()
-        pad_size = kernel // 2
-        self.conv1 = nn.Sequential(nn.Conv2d(in_size, out_size, kernel, stride=stride, padding=pad_size, bias=False),
-                                       nn.BatchNorm2d(out_size),
-                                       nn.ReLU(inplace=True),)
 
-    def forward(self, inputs):
-        outputs = self.conv1(inputs)
-        return outputs
+        self.conv1 = tf.keras.Sequential([
+            tf.keras.Conv2D(in_size, kernel, strides=stride, padding="same", use_bias=False),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.ReLU()
+        ])
 
-class DeConvBlock(nn.Module):
-    def __init__(self, in_size, out_size, kernel):
+    def call(self, inputs):
+        return self.conv1(inputs)
+
+class DeConvBlock(tf.keras.layers.Layer):
+    def __init__(self, in_size, kernel):
         super(DeConvBlock, self).__init__()
-        pad_size = kernel // 2
-        self.conv1 = nn.Sequential(nn.ConvTranspose2d(in_size, out_size, kernel, stride=2, padding=pad_size, output_padding=1, bias=False),
-                                       nn.BatchNorm2d(out_size),
-                                       nn.ReLU(inplace=True),)
 
-    def forward(self, inputs):
-        outputs = self.conv1(inputs)
-        return outputs
+        self.conv1 = tf.keras.Sequential([
+             tf.keras.layers.Conv2DTranspose (in_size, kernel, strides=2, padding="same", use_bias=False),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.ReLU()
+        ])
+
+    def call(self, inputs):
+        return self.conv1(inputs)
 
 class ConvBlock_last(nn.Module):
-    def __init__(self, in_size, out_size, kernel):
+    def __init__(self, in_size, kernel):
         super(ConvBlock_last, self).__init__()
-        pad_size = kernel // 2
-        self.conv1 = nn.Sequential(nn.Conv2d(in_size, out_size, kernel, padding=pad_size, bias=False))
-                                       # nn.BatchNorm2d(out_size),
-                                       # nn.Tanh())
+        
+        self.conv1 = tf.keras.Sequential([
+            tf.keras.Conv2D(in_size, kernel, padding="same", use_bias=False),
+        ])
 
-    def forward(self, inputs):
-        outputs = self.conv1(inputs)
-        return outputs
+    def call(self, inputs):
+        return self.conv1(inputs)
 
 class DeConvBlock_last(nn.Module):
     def __init__(self, in_size, out_size, kernel):
         super(DeConvBlock_last, self).__init__()
-        pad_size = kernel // 2
-        self.conv1 = nn.Sequential(nn.ConvTranspose2d(in_size, out_size, kernel, padding=pad_size, bias=False))
-                                       # nn.BatchNorm2d(out_size),
-                                       # nn.Tanh())
+        
+        self.conv1 = tf.keras.Sequential([
+             tf.keras.layers.Conv2DTranspose (in_size, kernel, padding="same", use_bias=False)
+        ])
 
-    def forward(self, inputs):
-        outputs = self.conv1(inputs)
-        return outputs
+    def call(self, inputs):
+        return self.conv1(inputs)
 
 class ConvBlock_s(nn.Module):
     def __init__(self, in_size, out_size, kernel, stride):
