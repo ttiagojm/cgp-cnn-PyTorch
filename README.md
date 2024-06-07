@@ -1,3 +1,6 @@
+# ⚠️ WARNING ⚠️
+This code was adapted to use metrics, NASWOT and NTK, to estimate the accuracy of each architecture without training. Also, all the code was translated to Tensorflow and beacuse the idea was to run it in a single GPU, all the concurrence code was deleted.
+
 # cgp-cnn-PyTorch
 A Genetic Programming Approach to Designing CNN Architectures, In GECCO 2017 (oral presentation, Best Paper Award)
 
